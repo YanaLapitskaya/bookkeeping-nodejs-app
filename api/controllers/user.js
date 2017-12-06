@@ -9,16 +9,6 @@ const User = require('../models/User');
  * Sign in using email and password.
  */
 exports.login = (req, res, next) => {
-  req.assert('email', 'Email is not valid').isEmail();
-  req.assert('password', 'Password cannot be blank').notEmpty();
-  req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-    return req.status(400).send({error: errors});
-  }
-
   passport.authenticate('bearer', (err, user, info) => {
     if (err) { return res.status(400).send({error: err}); }
     if (!user) {
@@ -31,7 +21,7 @@ exports.login = (req, res, next) => {
   })(req, res, next);
 
 };
-
+  
 /**
  * GET /logout
  * Log out.
@@ -46,17 +36,6 @@ exports.logout = (req, res) => {
  * Create a new account.
  */
 exports.signup = (req, res, next) => {
-  req.assert('email', 'Email is not valid').isEmail();
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
-  req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-    return res.status(400).send({error: errors});
-  }
-
   const user = new User({
     email: req.body.email,
     password: req.body.password
@@ -84,15 +63,6 @@ exports.signup = (req, res, next) => {
  * Update profile information.
  */
 exports.updateProfile = (req, res, next) => {
-  req.assert('email', 'Please enter a valid email address.').isEmail();
-  req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-    return res.status(400).send({error: errors});
-  }
-
   User.findById(req.user.id, (err, user) => {
     if (err) { return next(err); }
     user.email = req.body.email || '';
@@ -117,15 +87,6 @@ exports.updateProfile = (req, res, next) => {
  * Update current password.
  */
 exports.updatePassword = (req, res, next) => {
-  req.assert('password', 'Password must be at least 4 characters long').len(4);
-  req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-    return res.status(400).send({error: errors});
-}
-
   User.findById(req.user.id, (err, user) => {
     if (err) { return next(err); }
     user.password = req.body.password;
@@ -153,15 +114,6 @@ exports.deleteAccount = (req, res, next) => {
  * Process the reset password request.
  */
 exports.reset = (req, res, next) => {
-  req.assert('password', 'Password must be at least 4 characters long.').len(4);
-  req.assert('confirm', 'Passwords must match.').equals(req.body.password);
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-      return res.status(400).send({error: errors});
-  }
-
   const resetPassword = () =>
     User
       .findOne({ passwordResetToken: req.params.token })
@@ -192,8 +144,8 @@ exports.reset = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
-      subject: 'Your Hackathon Starter password has been changed',
+      from: 'bookkeeping@gmail.com',
+      subject: 'Your Bookkeeping password has been changed',
       text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
     };
     return transporter.sendMail(mailOptions)
@@ -212,15 +164,6 @@ exports.reset = (req, res, next) => {
  * Create a random token, then the send user an email with a reset link.
  */
 exports.forgot = (req, res, next) => {
-  req.assert('email', 'Please enter a valid email address.').isEmail();
-  req.sanitize('email').normalizeEmail({ gmail_remove_dots: false });
-
-  const errors = req.validationErrors();
-
-  if (errors) {
-      return res.status(400).send({error: errors});
-  }
-
   const createRandomToken = crypto
     .randomBytesAsync(16)
     .then(buf => buf.toString('hex'));
@@ -251,8 +194,8 @@ exports.forgot = (req, res, next) => {
     });
     const mailOptions = {
       to: user.email,
-      from: 'hackathon@starter.com',
-      subject: 'Reset your password on Hackathon Starter',
+      from: 'bookkeeping@gmail.com',
+      subject: 'Reset your password on Bookkeeping Service',
       text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
         http://${req.headers.host}/reset/${token}\n\n
