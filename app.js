@@ -17,7 +17,6 @@ const sass = require('node-sass-middleware');
 const multer = require('multer');
 const routes = require('./api/routes/v1/index.route.js');
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
-
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
