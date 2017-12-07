@@ -84,6 +84,14 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
 //mount api v1 routes
 app.use('/api/v1', routes);
 
+var ev = require('express-validation');
+ 
+// error handlers
+app.use((err, req, res, next)=>{
+  // specific for validation errors 
+  if (err instanceof ev.ValidationError) return res.status(err.status).json(err);
+});
+
 app.use(errorHandler());
 
 app.listen(app.get('port'), () => {
