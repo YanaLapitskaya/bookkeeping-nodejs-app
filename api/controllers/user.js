@@ -9,8 +9,9 @@ const User = require('../models/User');
  * Sign in using email and password.
  */
 exports.login = (req, res, next) => {
-  passport.authenticate('bearer', (err, user, info) => {
+  passport.authenticate('local', { session: false }, (err, user, info) => {
     if (err) { return res.status(400).send({error: err}); }
+    console.log("in controller"+user,err,info);
     if (!user) {
       return res.status(400).send({error: 'User not found'});
     }
