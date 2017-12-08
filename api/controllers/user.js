@@ -117,35 +117,37 @@ exports.deleteAccount = (req, res, next) => {
 exports.reset = (req, res, next) => {
   const resetPassword = () =>
     User
-      .findOne({ passwordResetToken: req.params.token })
+      .findOne({passwordResetToken: req.params.token })
       .where('passwordResetExpires').gt(Date.now())
       .then((user) => {
         if (!user) {
           return res.status(400).send({error:  'Password reset token is invalid or has expired.'});
         }
         user.password = req.body.password;
-        user.passwordResetToken = undefined;
-        user.passwordResetExpires = undefined;
+        user.passwordResetToken = null;
+        user.passwordResetExpires = null;
         return user.save().then(() => new Promise((resolve, reject) => {
           req.logIn(user, (err) => {
             if (err) { return reject(err); }
             resolve(user);
           });
         }));
+
       });
 
   const sendResetPasswordEmail = (user) => {
+    console.log('here')
     if (!user) { return; }
     const transporter = nodemailer.createTransport({
-      service: 'SendGrid',
-      auth: {
-        user: process.env.SENDGRID_USER,
-        pass: process.env.SENDGRID_PASSWORD
-      }
+        service: 'gmail',
+        auth: {
+              user: '',
+              pass: ''
+        }
     });
     const mailOptions = {
       to: user.email,
-      from: 'bookkeeping@gmail.com',
+      from: '451gruppa@gmail.com',
       subject: 'Your Bookkeeping password has been changed',
       text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
     };
@@ -177,7 +179,7 @@ exports.forgot = (req, res, next) => {
           return res.status(400).send({error: 'Account with that email address does not exist.' });
         } else {
           user.passwordResetToken = token;
-          user.passwordResetExpires = Date.now() + 3600000; // 1 hour
+          user.passwordResetExpires = Date.now() + 36000000; // 1 hour
           user = user.save();
         }
         return user;
@@ -187,15 +189,15 @@ exports.forgot = (req, res, next) => {
     if (!user) { return; }
     const token = user.passwordResetToken;
     const transporter = nodemailer.createTransport({
-      service: 'SendGrid',
-      auth: {
-        user: process.env.SENDGRID_USER,
-        pass: process.env.SENDGRID_PASSWORD
-      }
+      service: 'gmail',
+        auth: {
+              user: '',
+              pass: ''
+        }
     });
     const mailOptions = {
       to: user.email,
-      from: 'bookkeeping@gmail.com',
+      from: 'gruppa451@gmail.com',
       subject: 'Reset your password on Bookkeeping Service',
       text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
@@ -212,4 +214,5 @@ exports.forgot = (req, res, next) => {
     .then(setRandomToken)
     .then(sendForgotPasswordEmail)
     .catch(next);
+
 };
