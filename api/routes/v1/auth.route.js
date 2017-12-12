@@ -119,7 +119,7 @@ router.route('/reset/:token').post(validate(password),authController.reset);
 /**
  * @swagger
  * /api/v1/auth/signup:
- *   post:
+ *   put:
  *     tags:
  *       - Auth
  *     description: Sign up a new account
@@ -149,6 +149,6 @@ router.route('/reset/:token').post(validate(password),authController.reset);
  *       400:
  *         description: account with that email address already exists
  */
-router.route('/signup').post(validate(signup),authController.signup);
+router.route('/signup').put(validate(signup),authController.signup);
 
 module.exports = router;

@@ -32,7 +32,7 @@ exports.logout = (req, res) => {
 };
 
 /**
- * POST /signup
+ * PUT /signup
  * Create a new account.
  */
 exports.signup = (req, res, next) => {
