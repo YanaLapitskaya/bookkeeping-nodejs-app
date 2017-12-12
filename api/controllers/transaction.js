@@ -10,9 +10,5 @@ exports.addTransaction = (req,res,next)=>{
 	transaction.save((err)=>{
 		if(err) {return next(err);}
 		res.status(200).send({transaction: transaction});
-	})
-}
-
-exports.getTransaction = (req,res,next)=>{
-
-}
+	});
+};
