@@ -3,53 +3,28 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const chalk = require('chalk');
-const errorHandler = require('errorhandler');
 const dotenv = require('dotenv');
 const MongoStore = require('connect-mongo')(session);
-const mongoose = require('mongoose');
 const passport = require('passport');
 const routes = require('./api/routes/v1/index.route.js');
-const ev = require('express-validation');
-const swaggerJSDoc = require('swagger-jsdoc');
 const path = require('path');
+const configureMongo = require('./api/config/mongo');
+const configureSwagger = require('./api/config/swagger');
+const errorHandler = require('errorhandler');
 
 dotenv.load({ path: '.env.example' });
 
 const app = express();
 
-//swagger configuration
-let swaggerDefinition = {
-	info: {
-		title: 'Node Swagger API',
-		version: '1.0.0',
-		description: 'REST API for version 1.0.0 bookkeeping service',
-	},
-	host: 'localhost:8080',
-	basePath: '/',
-};
+//configurations
+const swaggerSpec = configureSwagger();
+configureMongo();
 
-let options = {
-	swaggerDefinition: swaggerDefinition,
-	apis: ['./api/routes/v1/*.js'],
-};
-
-let swaggerSpec = swaggerJSDoc(options);
-
-//mongo configuration
-mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
-mongoose.connection.on('error', (err) => {
-	console.error(err);
-	console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
-	process.exit();
-});
-
-//express configuration
 app.set('host', process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0');
 app.set('port', process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
 	resave: true,
@@ -68,20 +43,14 @@ app.use((req, res, next) => {
 	next();
 });
 
-//mount api v1 routes
+//routes
 app.use('/api/v1', routes);
 
-// serve swagger
 app.get('/swagger.json', function(req, res) {
 	res.setHeader('Content-Type', 'application/json');
 	res.send(swaggerSpec);
 });
- 
-// error handlers
-app.use((err, req, res)=>{
-	// specific for validation errors 
-	if (err instanceof ev.ValidationError) return res.status(err.status).json(err);
-});
+
 app.use(errorHandler());
 
 app.listen(app.get('port'), () => {
