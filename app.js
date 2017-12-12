@@ -10,10 +10,30 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const routes = require('./api/routes/v1/index.route.js');
 const ev = require('express-validation');
+const swaggerJSDoc = require('swagger-jsdoc');
+const path = require('path');
 
 dotenv.load({ path: '.env.example' });
 
 const app = express();
+
+//swagger configuration
+let swaggerDefinition = {
+  info: {
+    title: 'Node Swagger API',
+    version: '1.0.0',
+    description: 'REST API for version 1.0.0 bookkeeping service',
+  },
+  host: 'localhost:8080',
+  basePath: '/',
+};
+
+let options = {
+  swaggerDefinition: swaggerDefinition,
+  apis: ['./api/routes/v1/*.js'],
+};
+
+let swaggerSpec = swaggerJSDoc(options);
 
 //mongo configuration
 mongoose.Promise = global.Promise;
@@ -30,6 +50,7 @@ app.set('port', process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   resave: true,
   saveUninitialized: true,
@@ -49,6 +70,12 @@ app.use((req, res, next) => {
 
 //mount api v1 routes
 app.use('/api/v1', routes);
+
+// serve swagger
+app.get('/swagger.json', function(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
  
 // error handlers
 app.use((err, req, res)=>{

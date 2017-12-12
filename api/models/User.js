@@ -10,13 +10,10 @@ const userSchema = new mongoose.Schema({
 
   tokens: Array,
 
-  profile: {
-    name: String,
-    gender: String,
-    location: String,
-    website: String,
-    picture: String
-  }
+  name: String,
+  gender: String,
+  location: String,
+  picture: String
 }, { timestamps: true });
 
 userSchema.pre('save', function save(next) {
