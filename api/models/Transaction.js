@@ -1,21 +1,29 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const autoIncrement = require('mongoose-auto-increment');
-const Card = require('./Card.js');
 
-autoIncrement.initialize(mongoose.connection);
+//autoIncrement.initialize(mongoose.connection);
 
-const transactionSchema = new mongoose.Schema({
+const transactionSchema = new Schema({
 	title: String,
 	amount: Number,
 	type: String,
 	date: { type: Date, default: Date.now },
-	card: { type: mongoose.Schema.Types.ObjectId, ref: 'Card' },
-	check: Buffer, 
-	details: String
+	card: { type: Schema.Types.ObjectId, ref: 'Card' },
+	check: Buffer,
 });
 
-transactionSchema.plugin(autoIncrement.plugin,'Transaction');
+//transactionSchema.plugin(autoIncrement.plugin,'Transaction');
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+transactionSchema.pre('remove', function (next) {
+	let project = this;
+	project.model('User').update(
+		{ projects: project._id },
+		{ $pull: { projects: project._id } },
+		{ multi: true },
+		next);
+});
+
+const Transaction = mongoose.model('Transaction', transactionSchema	);
 
 module.exports = Transaction;
