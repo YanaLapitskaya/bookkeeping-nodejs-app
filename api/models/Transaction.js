@@ -16,10 +16,10 @@ const transactionSchema = new Schema({
 //transactionSchema.plugin(autoIncrement.plugin,'Transaction');
 
 transactionSchema.pre('remove', function (next) {
-	let project = this;
-	project.model('User').update(
-		{ projects: project._id },
-		{ $pull: { projects: project._id } },
+	let tran = this;
+	tran.model('User').update(
+		{ },
+		{ $pull: { transactions: tran._id } },
 		{ multi: true },
 		next);
 });

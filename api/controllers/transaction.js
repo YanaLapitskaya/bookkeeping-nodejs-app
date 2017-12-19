@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 /**
  * GET /all
@@ -37,8 +38,10 @@ exports.addTransaction = (req,res,next)=>{
 	const trans = new Transaction({
 		title: req.body.title,
 		amount: req.body.amount,
-		type: req.body.type
+		type: req.body.type,
 	});
+	if(req.body.card) trans.card = new mongoose.Types.ObjectId(req.body.card);
+
 	trans.save(function (err) {
 		if (err) return next(err);
 	});

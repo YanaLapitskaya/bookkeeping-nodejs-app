@@ -9,6 +9,7 @@ const userSchema = new Schema({
 	passwordResetExpires: Date,
 
 	transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
+	cards: [{ type: Schema.Types.ObjectId, ref: 'Card' }],
 
 	name: String,
 	gender: String,

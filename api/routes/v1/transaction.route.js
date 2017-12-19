@@ -52,8 +52,8 @@ router.route('/:id').get(transactionController.getTransaction);
  *       - application/json
  *     parameters:
  *       - in: body
- *         name: user
- *         description: User object
+ *         name: transaction
+ *         description: Transaction object
  *         required: true
  *         schema:
  *           type: object
@@ -67,6 +67,8 @@ router.route('/:id').get(transactionController.getTransaction);
  *             amount:
  *               type: number
  *             type:
+ *               type: string
+ *             card:
  *               type: string
  *     responses:
  *       200:
@@ -92,8 +94,8 @@ router.route('/').put(transactionController.addTransaction);
  *           type: number
  *           required: true
  *       - in: body
- *         name: user
- *         description: User object
+ *         name: transaction
+ *         description: Transaction object
  *         required: true
  *         schema:
  *           type: object
@@ -130,7 +132,7 @@ router.route('/:id').post(transactionController.editTransaction);
  *           required: true
  *     responses:
  *       200:
- *         description: transaction has been updated, returns transaction object
+ *         description: transaction has been deleted
  */
 router.route('/:id').delete(transactionController.deleteTransaction);
 

@@ -7,6 +7,15 @@ const cardSchema = new mongoose.Schema({
 	amount: Number
 });
 
+cardSchema.pre('remove', function (next) {
+	let card = this;
+	card.model('User').update(
+		{ },
+		{ $pull: { cards: card._id } },
+		{ multi: true },
+		next);
+});
+
 const Card = mongoose.model('Card', cardSchema);
 
 module.exports = Card;
