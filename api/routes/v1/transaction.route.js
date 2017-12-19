@@ -16,7 +16,7 @@ const router = express.Router();
  *       200:
  *         description: returns array of transactions
  */
-router.route('/:id').get(transactionController.getTransactions);
+router.route('/all').get(transactionController.getTransactions);
 
 /**
  * @swagger
@@ -103,8 +103,6 @@ router.route('/').put(transactionController.addTransaction);
  *             amount:
  *               type: number
  *             type:
- *               type: string
- *             details:
  *               type: string
  *     responses:
  *       200:
