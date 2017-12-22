@@ -10,7 +10,7 @@ const transactionSchema = new Schema({
 	type: String,
 	date: { type: Date, default: Date.now },
 	card: { type: Schema.Types.ObjectId, ref: 'Card' },
-	check: Buffer,
+	check: String,
 });
 
 //transactionSchema.plugin(autoIncrement.plugin,'Transaction');

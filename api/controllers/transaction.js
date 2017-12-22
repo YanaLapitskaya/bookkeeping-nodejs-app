@@ -63,14 +63,17 @@ exports.addTransaction = (req,res,next)=>{
  * Edit an existing transaction.
  */
 exports.editTransaction = (req,res,next)=>{
+	const check = req.file;
+
 	Transaction.findById(req.params.id, (err, trans) => {
 		if (err) return next(err);
 
 		trans.title = req.body.title || '';
-		trans.amount = req.body.amount || '';
+		trans.amount = Number(req.body.amount) || '';
 		trans.type = req.body.type || '';
-		//trans.card = req.body.card || '';
-		//trans.check = req.body.check || '';
+
+		if(req.body.card) trans.card = new mongoose.Types.ObjectId(req.body.card);
+		if(check) trans.check = check.path;
 
 		trans.save((err) => {
 			if (err) return next(err);

@@ -1,5 +1,19 @@
 const express = require('express');
-const transactionController = require('../../controllers/transaction.js');
+const transactionController = require('./../../controllers/transaction.js');
+const multer  = require('multer');
+const crypto = require('crypto');
+const mime = require('mime');
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, 'public/uploads/');
+	},
+	filename: function (req, file, cb) {
+		crypto.pseudoRandomBytes(16, function (err, raw) {
+			cb(null, raw.toString('hex') + Date.now() + '.' + mime.getExtension(file.mimetype));
+		});
+	}
+});
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -85,6 +99,8 @@ router.route('/').put(transactionController.addTransaction);
  *     description: Allow to edit an existing transaction
  *     produces:
  *       - application/json
+ *     consumes:
+ *       - multipart/form-data
  *     parameters:
  *       - in: path
  *         name: id
@@ -93,24 +109,23 @@ router.route('/').put(transactionController.addTransaction);
  *         schema:
  *           type: number
  *           required: true
- *       - in: body
- *         name: transaction
- *         description: Transaction object
- *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             title:
- *               type: string
- *             amount:
- *               type: number
- *             type:
- *               type: string
+ *       - in: formData
+ *         name: title
+ *         type: string
+ *       - in: formData
+ *         name: amount
+ *         type: number
+ *       - in: formData
+ *         name: type
+ *         type: string
+ *       - in: formData
+ *         name: file
+ *         type: file
  *     responses:
  *       200:
  *         description: transaction has been updated, returns transaction object
  */
-router.route('/:id').post(transactionController.editTransaction);
+router.route('/:id').post(upload.single('file'),transactionController.editTransaction);
 
 
 /**
