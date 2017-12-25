@@ -94,7 +94,7 @@ exports.reset = (req, res, next) => {
 			}
 		});
 		const mailOptions = {
-			to: process.env.MAIL_USER,
+			to: req.user.email,
 			from: '',
 			subject: 'Your Bookkeeping password has been changed',
 			text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
