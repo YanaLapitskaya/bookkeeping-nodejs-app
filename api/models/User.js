@@ -10,6 +10,7 @@ const userSchema = new Schema({
 
 	transactions: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
 	cards: [{ type: Schema.Types.ObjectId, ref: 'Card' }],
+	savings: [{ type: Schema.Types.ObjectId, ref: 'Saving' }],
 
 	name: String,
 	gender: String,
